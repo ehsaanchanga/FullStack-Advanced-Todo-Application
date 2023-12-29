@@ -1,1 +1,1 @@
-# FullStack Advanced ToDo APllication
+# FullStack Advanced ToDo APPlication
