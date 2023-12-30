@@ -1,1 +1,1 @@
-export const DB_NAME = "todofy";
+export const DB_NAME = "todaily";
