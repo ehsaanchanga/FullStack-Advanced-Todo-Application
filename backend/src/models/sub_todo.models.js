@@ -10,6 +10,10 @@ const subTodoSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    color: {
+      type: String,
+      default: "#FFFFFF",
+    },
     createdBy: {
       type: Schema.Types.ObjectId,
       ref: "User",
