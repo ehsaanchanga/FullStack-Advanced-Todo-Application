@@ -1,1 +1,3 @@
-# FullStack Advanced ToDo APPlication
+# Todaily
+
+## Advanced multi-user TODO application

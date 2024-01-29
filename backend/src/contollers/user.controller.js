@@ -1,6 +1,7 @@
 import { User } from "../models/user.models.js";
 import { createError } from "../utils/createError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import { isValidObjectId } from "mongoose";
 
 const cookieOptions = {
   httpOnly: true,
@@ -76,7 +77,7 @@ const loginUser = async (req, res, next) => {
   try {
     const { username, email, password } = req.body;
 
-    if (!username && !email) {
+    if (!username || username.trim() === "" || !email || email.trim() === "") {
       next(createError(400, "username or email is madatory"));
     }
 
