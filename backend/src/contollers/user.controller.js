@@ -1,6 +1,7 @@
 import { User } from "../models/user.models.js";
 import { createError } from "../utils/createError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import jwt from "jsonwebtoken";
 import { isValidObjectId } from "mongoose";
 
 const cookieOptions = {
@@ -112,4 +113,46 @@ const loginUser = async (req, res, next) => {
     next(error);
   }
 };
-export { registerUser, loginUser };
+
+const refreshAccessToken = async (req, res, next) => {
+  try {
+    const { inRefreshToken } = req.cookies || req.body;
+
+    if (!inRefreshToken) {
+      createError(401, "Unauthorized request");
+    }
+
+    const decodedToken = jwt.verify(
+      inRefreshToken,
+      process.env.REFRESH_TOKEN_SECRET
+    );
+
+    const user = await User.findById(decodedToken?._id);
+
+    if (!user) {
+      createError(401, "Invalid refresh token");
+    }
+
+    if (inRefreshToken !== user.refreshToken) {
+      createError(401, "Refresh token is expired or used");
+    }
+
+    const { accessToken, refreshToken: newRefreshToken } =
+      generateAccessAndRefreshToken(user._id);
+
+    res
+      .status(200)
+      .cookie("accessToken", accessToken, cookieOptions)
+      .cookie("refreshToken", refreshToken, cookieOptions)
+      .send(
+        new ApiResponse(
+          200,
+          { accessToken: accessToken, newRefreshToken },
+          "Access Token refreshed successfully"
+        )
+      );
+  } catch (error) {
+    next(error);
+  }
+};
+export { registerUser, loginUser, refreshAccessToken };
